@@ -23,16 +23,18 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Install dependencies & Build Web
+      - name: Prepare Web Files & Install Capacitor
         run: |
-          npm install
-          npm run build
-
-      - name: Configure Capacitor & Generate Android Project
-        run: |
+          mkdir -p www
+          cp -r * www/ 2>/dev/null || true
+          rm -rf www/www www/.github
+          npm init -y
           npm install @capacitor/core @capacitor/cli @capacitor/android
-          npx cap init "NEXUS AI 100" "com.nexusai100.app" --web-dir dist || true
-          npx cap add android || npx cap sync android
+
+      - name: Generate Android Project
+        run: |
+          npx cap init "NEXUS AI 100" "com.nexusai100.app" --web-dir www
+          npx cap add android
 
       - name: Build Debug APK
         run: |
