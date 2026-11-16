@@ -162,7 +162,7 @@ private fun AdsterraBannerContainer(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = stringResource(R.string.ad_banner_placeholder),
+                        text = stringResource(R.string.ad_banner_label),
                         style = MaterialTheme.typography.labelSmall,
                         fontSize = 11.sp,
                         fontWeight = FontWeight.Medium,
