@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">Nexus AI 100</string>
+    <string name="brand_header_title">NEXUS AI 100</string>
+    <string name="brand_free_badge">100% GRATUITO</string>
+    <string name="tab_site_creator">Criador de Sites IA</string>
+    <string name="tab_antivirus">AI Antivírus</string>
+    <string name="tab_tools_catalog">100 Ferramentas IA</string>
+    <string name="ad_banner_label">Espaço Banner Adsterra • 320x50</string>
+    <string name="api_settings_cd">Configurações da chave API Gemini</string>
+    <string name="generate_site_cta">Gerar Site com IA Grátis Agora</string>
+    <string name="download_html_cta">Baixar Código HTML Completo</string>
+    <string name="analyze_link_cta">Analisar Link</string>
+    <string name="corporate_av_title">AI Antivírus Corporativo — Detector de Links Falsos e Segurança para Empresas</string>
+    <string name="corporate_av_badge">Proteção Empresarial Ativa</string>
+    <string name="corporate_av_cta">Verificar Link Agora</string>
+    <string name="link_safe_badge">Link Seguro</string>
+    <string name="link_phishing_badge">Risco Crítico / Golpe Detectado</string>
+</resources>

@@ -1,0 +1,6 @@
+{
+  "name": "Nexus AI 100",
+  "description": "Criador de Sites IA gratuito, AI Antivírus detector de golpes/phishing e catálogo pesquisável com 100 ferramentas de Inteligência Artificial.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
