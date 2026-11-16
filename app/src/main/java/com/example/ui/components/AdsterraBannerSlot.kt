@@ -39,16 +39,40 @@ import com.example.ui.theme.NexusNeonBlue
 import com.example.ui.theme.NexusSurface
 import com.example.ui.theme.NexusTextMuted
 
+private const val DEFAULT_ADSTERRA_320X50_HTML = """
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<style>
+  html, body { margin: 0; padding: 0; background: transparent; width: 100%; height: 100%; overflow: hidden; display: flex; justify-content: center; align-items: center; }
+</style>
+</head>
+<body>
+<script type="text/javascript">
+  atOptions = {
+    'key' : 'bb81a277c29d23137366a5a415b29334',
+    'format' : 'iframe',
+    'height' : 50,
+    'width' : 320,
+    'params' : {}
+  };
+</script>
+<script type="text/javascript" src="https://www.highperformanceformat.com/bb81a277c29d23137366a5a415b29334/invoke.js"></script>
+</body>
+</html>
+"""
+
 /**
- * Contêiner dedicado para banner Adsterra Mobile 320x50 no TOPO (abaixo do cabeçalho).
+ * Contêiner dedicado para banner Adsterra Mobile 320x50 no TOPO (abaixo do título).
  * Posicionado em fluxo próprio sem sobrepor botões clicáveis.
  */
 @Composable
 fun AdsterraTopBanner(
     modifier: Modifier = Modifier,
-    adsterraHtmlSnippet: String = ""
+    adsterraHtmlSnippet: String = DEFAULT_ADSTERRA_320X50_HTML
 ) {
-    // <!-- ESPAÇO BANNER ADSTERRA TOPO -->
+    //<!-- ESPAÇO BANNER ADSTERRA TOPO -->
     AdsterraBannerContainer(
         slotTag = "adsterra_top_banner",
         adsterraHtmlSnippet = adsterraHtmlSnippet,
@@ -57,15 +81,15 @@ fun AdsterraTopBanner(
 }
 
 /**
- * Contêiner dedicado para banner Adsterra Mobile 320x50 no RODAPÉ (acima da barra inferior).
+ * Contêiner dedicado para banner Adsterra Mobile 320x50 no RODAPÉ (acima da barra de navegação).
  * Posicionado em fluxo próprio sem sobrepor botões clicáveis.
  */
 @Composable
 fun AdsterraBottomBanner(
     modifier: Modifier = Modifier,
-    adsterraHtmlSnippet: String = ""
+    adsterraHtmlSnippet: String = DEFAULT_ADSTERRA_320X50_HTML
 ) {
-    // <!-- ESPAÇO BANNER ADSTERRA RODAPE -->
+    //<!-- ESPAÇO BANNER ADSTERRA RODAPÉ -->
     AdsterraBannerContainer(
         slotTag = "adsterra_bottom_banner",
         adsterraHtmlSnippet = adsterraHtmlSnippet,
@@ -106,7 +130,7 @@ private fun AdsterraBannerContainer(
                             settings.javaScriptEnabled = true
                             settings.domStorageEnabled = true
                             loadDataWithBaseURL(
-                                "https://adsterra.com",
+                                "https://www.highperformanceformat.com",
                                 adsterraHtmlSnippet,
                                 "text/html",
                                 "UTF-8",
