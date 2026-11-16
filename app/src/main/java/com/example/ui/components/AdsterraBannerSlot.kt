@@ -1,6 +1,8 @@
 package com.example.ui.components
 
 import android.annotation.SuppressLint
+import android.webkit.CookieManager
+import android.webkit.WebSettings
 import android.webkit.WebView
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -25,7 +27,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -63,16 +64,11 @@ private const val DEFAULT_ADSTERRA_320X50_HTML = """
 </html>
 """
 
-/**
- * Contêiner dedicado para banner Adsterra Mobile 320x50 no TOPO (abaixo do título).
- * Posicionado em fluxo próprio sem sobrepor botões clicáveis.
- */
 @Composable
 fun AdsterraTopBanner(
     modifier: Modifier = Modifier,
     adsterraHtmlSnippet: String = DEFAULT_ADSTERRA_320X50_HTML
 ) {
-    //<!-- ESPAÇO BANNER ADSTERRA TOPO -->
     AdsterraBannerContainer(
         slotTag = "adsterra_top_banner",
         adsterraHtmlSnippet = adsterraHtmlSnippet,
@@ -80,16 +76,11 @@ fun AdsterraTopBanner(
     )
 }
 
-/**
- * Contêiner dedicado para banner Adsterra Mobile 320x50 no RODAPÉ (acima da barra de navegação).
- * Posicionado em fluxo próprio sem sobrepor botões clicáveis.
- */
 @Composable
 fun AdsterraBottomBanner(
     modifier: Modifier = Modifier,
     adsterraHtmlSnippet: String = DEFAULT_ADSTERRA_320X50_HTML
 ) {
-    //<!-- ESPAÇO BANNER ADSTERRA RODAPÉ -->
     AdsterraBannerContainer(
         slotTag = "adsterra_bottom_banner",
         adsterraHtmlSnippet = adsterraHtmlSnippet,
@@ -129,8 +120,14 @@ private fun AdsterraBannerContainer(
                             setBackgroundColor(android.graphics.Color.TRANSPARENT)
                             settings.javaScriptEnabled = true
                             settings.domStorageEnabled = true
+                            settings.javaScriptCanOpenWindowsAutomatically = true
+                            settings.mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
+                            settings.userAgentString =
+                                "Mozilla/5.0 (Linux; Android 14; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Mobile Safari/537.36"
+                            CookieManager.getInstance().setAcceptCookie(true)
+                            CookieManager.getInstance().setAcceptThirdPartyCookies(this, true)
                             loadDataWithBaseURL(
-                                "https://www.highperformanceformat.com",
+                                "https://nexus-ai-oficial.netlify.app/",
                                 adsterraHtmlSnippet,
                                 "text/html",
                                 "UTF-8",
