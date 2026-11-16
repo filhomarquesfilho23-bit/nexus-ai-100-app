@@ -52,14 +52,14 @@ private const val DEFAULT_ADSTERRA_320X50_HTML = """
 <body>
 <script type="text/javascript">
   atOptions = {
-    'key' : 'bb81a277c29d23137366a5a415b29334',
+    'key' : 'a9acb4c2f5d21587bd1b2e8133765997',
     'format' : 'iframe',
     'height' : 50,
     'width' : 320,
     'params' : {}
   };
 </script>
-<script type="text/javascript" src="https://www.highperformanceformat.com/bb81a277c29d23137366a5a415b29334/invoke.js"></script>
+<script type="text/javascript" src="https://bauval.org/22/a9acb4c2f5d21587bd1b2e8133765997"></script>
 </body>
 </html>
 """
@@ -88,6 +88,18 @@ fun AdsterraBottomBanner(
     )
 }
 
+@Composable
+fun AdsterraBannerSlot(
+    modifier: Modifier = Modifier,
+    adsterraHtmlSnippet: String = DEFAULT_ADSTERRA_320X50_HTML
+) {
+    AdsterraBannerContainer(
+        slotTag = "adsterra_banner_slot",
+        adsterraHtmlSnippet = adsterraHtmlSnippet,
+        modifier = modifier
+    )
+}
+
 @SuppressLint("SetJavaScriptEnabled")
 @Composable
 private fun AdsterraBannerContainer(
@@ -95,21 +107,21 @@ private fun AdsterraBannerContainer(
     adsterraHtmlSnippet: String,
     modifier: Modifier = Modifier
 ) {
+    val shape = RoundedCornerShape(10.dp)
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 12.dp, vertical = 6.dp),
+            .testTag(slotTag),
         contentAlignment = Alignment.Center
     ) {
         Box(
             modifier = Modifier
-                .widthIn(max = 320.dp)
+                .widthIn(max = 324.dp)
                 .fillMaxWidth()
-                .height(50.dp)
-                .clip(RoundedCornerShape(10.dp))
-                .background(NexusSurface.copy(alpha = 0.85f))
-                .border(1.dp, NexusBorder, RoundedCornerShape(10.dp))
-                .testTag(slotTag),
+                .height(54.dp)
+                .clip(shape)
+                .background(NexusSurface)
+                .border(1.dp, NexusBorder, shape),
             contentAlignment = Alignment.Center
         ) {
             if (adsterraHtmlSnippet.isNotBlank()) {
@@ -123,11 +135,11 @@ private fun AdsterraBannerContainer(
                             settings.javaScriptCanOpenWindowsAutomatically = true
                             settings.mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
                             settings.userAgentString =
-                                "Mozilla/5.0 (Linux; Android 14; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Mobile Safari/537.36"
+                                "Mozilla/5.0 (Linux; Android 13; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36"
                             CookieManager.getInstance().setAcceptCookie(true)
                             CookieManager.getInstance().setAcceptThirdPartyCookies(this, true)
                             loadDataWithBaseURL(
-                                "https://nexus-ai-oficial.netlify.app/",
+                                "https://filhomarquesfilho23-bit.github.io/nexus-ai-100/",
                                 adsterraHtmlSnippet,
                                 "text/html",
                                 "UTF-8",
@@ -150,12 +162,11 @@ private fun AdsterraBannerContainer(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = stringResource(R.string.ad_banner_label),
-                        style = MaterialTheme.typography.labelSmall.copy(
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.Medium,
-                            letterSpacing = 0.4.sp
-                        ),
+                        text = stringResource(R.string.ad_banner_placeholder),
+                        style = MaterialTheme.typography.labelSmall,
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Medium,
+                        letterSpacing = 0.4.sp,
                         color = NexusTextMuted,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
