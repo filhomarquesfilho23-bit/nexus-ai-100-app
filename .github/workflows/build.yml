@@ -18,12 +18,11 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Generate Debug Keystore
+      - name: Create Debug Keystore Everywhere
         run: |
-          mkdir -p app
-          rm -f app/debug.keystore
-          keytool -genkeypair -v -keystore app/debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
-          ls -lh app/debug.keystore
+          keytool -genkeypair -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
+          find . -maxdepth 3 -type d -name "app" -exec cp debug.keystore {}/debug.keystore \;
+          find . -name "debug.keystore"
 
       - name: Build Debug APK
         run: gradle assembleDebug --no-configuration-cache
@@ -32,4 +31,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: nexus-ai-100-apk
-          path: app/build/outputs/apk/debug/app-debug.apk
+          path: "**/app-debug.apk"
