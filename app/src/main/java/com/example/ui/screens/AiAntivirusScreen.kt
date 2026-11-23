@@ -75,7 +75,6 @@ fun AiAntivirusScreen(
     onUrlChange: (String) -> Unit,
     onAnalyzeClick: () -> Unit,
     onDictateField: (label: String, onResult: (String) -> Unit) -> Unit,
-    onOpenApiSettings: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val clipboard = LocalClipboardManager.current
@@ -138,7 +137,7 @@ fun AiAntivirusScreen(
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            text = "Cole qualquer link suspeito, Pix Copia e Cola ou boleto para o Gemini detectar phishing e golpes.",
+                            text = "Cole qualquer link suspeito, Pix Copia e Cola ou boleto para a IA detectar phishing e golpes gratuitamente.",
                             style = MaterialTheme.typography.bodySmall,
                             color = NexusTextSecondary
                         )
@@ -267,7 +266,7 @@ fun AiAntivirusScreen(
                             )
                             Spacer(modifier = Modifier.width(10.dp))
                             Text(
-                                text = "Analisando com Gemini...",
+                                text = "Analisando com IA...",
                                 style = MaterialTheme.typography.titleSmall,
                                 fontWeight = FontWeight.Bold
                             )
@@ -291,9 +290,7 @@ fun AiAntivirusScreen(
             AnimatedVisibility(visible = uiState is AntivirusUiState.Error) {
                 val err = uiState as? AntivirusUiState.Error
                 ErrorActionCard(
-                    message = err?.message.orEmpty(),
-                    needsApiKey = err?.needsApiKey == true,
-                    onOpenApiSettings = onOpenApiSettings
+                    message = err?.message.orEmpty()
                 )
             }
 

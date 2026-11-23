@@ -15,10 +15,9 @@ import com.example.data.AiRepository
 import com.example.data.AiTool
 import com.example.data.CommercialChannel
 import com.example.data.CommercialCopyResult
-import com.example.data.GeminiRestAiRepository
 import com.example.data.GeneratedWebsite
 import com.example.data.LocalPreferencesStore
-import com.example.data.MissingApiKeyException
+import com.example.data.PollinationsAiRepository
 import com.example.data.SavedSiteEntry
 import com.example.data.ToolAssistantResponse
 import com.example.data.ToolCategory
@@ -47,28 +46,28 @@ sealed interface WebsiteUiState {
     data object Idle : WebsiteUiState
     data object Loading : WebsiteUiState
     data class Success(val website: GeneratedWebsite) : WebsiteUiState
-    data class Error(val message: String, val needsApiKey: Boolean = false) : WebsiteUiState
+    data class Error(val message: String) : WebsiteUiState
 }
 
 sealed interface AntivirusUiState {
     data object Idle : AntivirusUiState
     data object Loading : AntivirusUiState
     data class Success(val result: UrlAnalysisResult) : AntivirusUiState
-    data class Error(val message: String, val needsApiKey: Boolean = false) : AntivirusUiState
+    data class Error(val message: String) : AntivirusUiState
 }
 
 sealed interface AssistantUiState {
     data object Idle : AssistantUiState
     data object Loading : AssistantUiState
     data class Success(val response: ToolAssistantResponse) : AssistantUiState
-    data class Error(val message: String, val needsApiKey: Boolean = false) : AssistantUiState
+    data class Error(val message: String) : AssistantUiState
 }
 
 sealed interface CommercialCopyUiState {
     data object Idle : CommercialCopyUiState
     data object Loading : CommercialCopyUiState
     data class Success(val copy: CommercialCopyResult) : CommercialCopyUiState
-    data class Error(val message: String, val needsApiKey: Boolean = false) : CommercialCopyUiState
+    data class Error(val message: String) : CommercialCopyUiState
 }
 
 sealed interface WeatherUiState {
@@ -81,25 +80,19 @@ sealed interface UniversalAssistantUiState {
     data object Idle : UniversalAssistantUiState
     data object Loading : UniversalAssistantUiState
     data class Answer(val title: String, val body: String) : UniversalAssistantUiState
-    data class Error(val message: String, val needsApiKey: Boolean = false) : UniversalAssistantUiState
+    data class Error(val message: String) : UniversalAssistantUiState
 }
 
 class NexusViewModel(application: Application) : AndroidViewModel(application) {
 
     private val prefsStore = LocalPreferencesStore(application.applicationContext)
-    private val aiRepository: AiRepository = GeminiRestAiRepository(prefsStore)
+    private val aiRepository: AiRepository = PollinationsAiRepository()
     private val weatherRepository = WeatherRepository()
 
     private val _selectedTab = MutableStateFlow(0)
     val selectedTab: StateFlow<Int> = _selectedTab.asStateFlow()
 
-    // Top API key dialog & Free Quota / VIP Unlock
-    private val _localApiKey = MutableStateFlow(prefsStore.getLocalApiKey())
-    val localApiKey: StateFlow<String> = _localApiKey.asStateFlow()
-
-    private val _isApiDialogOpen = MutableStateFlow(false)
-    val isApiDialogOpen: StateFlow<Boolean> = _isApiDialogOpen.asStateFlow()
-
+    // Free Quota / VIP Unlock
     private val _isVipUnlocked = MutableStateFlow(prefsStore.isVipUnlocked())
     val isVipUnlocked: StateFlow<Boolean> = _isVipUnlocked.asStateFlow()
 
@@ -155,6 +148,9 @@ class NexusViewModel(application: Application) : AndroidViewModel(application) {
 
     private val _youtubeQueryOpen = MutableStateFlow<String?>(null)
     val youtubeQueryOpen: StateFlow<String?> = _youtubeQueryOpen.asStateFlow()
+
+    private val _isNexusLandingOpen = MutableStateFlow(false)
+    val isNexusLandingOpen: StateFlow<Boolean> = _isNexusLandingOpen.asStateFlow()
 
     // Universal Voice Assistant
     private val _isVoiceSheetOpen = MutableStateFlow(false)
@@ -255,25 +251,6 @@ class NexusViewModel(application: Application) : AndroidViewModel(application) {
 
     fun selectTab(index: Int) {
         _selectedTab.value = index.coerceIn(0, 2)
-    }
-
-    fun openApiDialog() {
-        _isApiDialogOpen.value = true
-    }
-
-    fun closeApiDialog() {
-        _isApiDialogOpen.value = false
-    }
-
-    fun saveLocalApiKey(key: String) {
-        prefsStore.saveLocalApiKey(key)
-        _localApiKey.value = prefsStore.getLocalApiKey()
-        _isApiDialogOpen.value = false
-    }
-
-    fun clearLocalApiKey() {
-        prefsStore.clearLocalApiKey()
-        _localApiKey.value = ""
     }
 
     // VIP Unlock & Daily Free Quota Controls
@@ -480,6 +457,15 @@ class NexusViewModel(application: Application) : AndroidViewModel(application) {
         _youtubeQueryOpen.value = null
     }
 
+    // Nexus IA Landing Page Showcase Controls
+    fun openNexusLanding() {
+        _isNexusLandingOpen.value = true
+    }
+
+    fun closeNexusLanding() {
+        _isNexusLandingOpen.value = false
+    }
+
     // Universal Voice Assistant Controls & Command Routing
     fun openVoiceAssistantSheet() {
         _isVoiceSheetOpen.value = true
@@ -607,7 +593,14 @@ class NexusViewModel(application: Application) : AndroidViewModel(application) {
             return
         }
 
-        // 7. Perguntas e Pesquisas Gerais com IA (Gemini REST + TTS pt-BR)
+        if (lower.contains("landing page") || lower.contains("página de vendas") || lower.contains("nexus ia")) {
+            _isVoiceSheetOpen.value = false
+            openNexusLanding()
+            onSpeakResponse("Abrindo a Landing Page de alta conversão Nexus IA.")
+            return
+        }
+
+        // 7. Perguntas e Pesquisas Gerais com IA (Pollinations AI + TTS pt-BR)
         if (!ensureAiQuotaOrShowVip()) {
             _isVoiceSheetOpen.value = false
             onSpeakResponse("Limite diário gratuito atingido. Desbloqueie o Modo VIP para continuar usando sem limites.")
@@ -620,7 +613,7 @@ class NexusViewModel(application: Application) : AndroidViewModel(application) {
                 val answer = aiRepository.askUniversalQuestion(clean)
                 consumeAiCreditOnSuccess()
                 _universalAssistantUiState.value = UniversalAssistantUiState.Answer(
-                    title = "Resposta Gemini AI",
+                    title = "Resposta NEXUS AI",
                     body = answer
                 )
                 onSpeakResponse(answer)
@@ -628,12 +621,7 @@ class NexusViewModel(application: Application) : AndroidViewModel(application) {
                 throw e
             } catch (e: TimeoutCancellationException) {
                 _universalAssistantUiState.value = UniversalAssistantUiState.Error(
-                    "Tempo limite excedido ao consultar o Gemini."
-                )
-            } catch (e: MissingApiKeyException) {
-                _universalAssistantUiState.value = UniversalAssistantUiState.Error(
-                    e.message ?: "Chave Gemini não configurada.",
-                    needsApiKey = true
+                    "Tempo limite excedido ao consultar a IA. Tente novamente."
                 )
             } catch (e: Exception) {
                 _universalAssistantUiState.value = UniversalAssistantUiState.Error(
@@ -683,16 +671,11 @@ class NexusViewModel(application: Application) : AndroidViewModel(application) {
                 throw e
             } catch (e: TimeoutCancellationException) {
                 _corporateAntivirusUiState.value = AntivirusUiState.Error(
-                    "Tempo limite excedido ao consultar a API do Gemini. Tente novamente."
-                )
-            } catch (e: MissingApiKeyException) {
-                _corporateAntivirusUiState.value = AntivirusUiState.Error(
-                    e.message ?: "Chave Gemini não configurada.",
-                    needsApiKey = true
+                    "Tempo limite excedido ao analisar com IA. Tente novamente."
                 )
             } catch (e: Exception) {
                 _corporateAntivirusUiState.value = AntivirusUiState.Error(
-                    e.localizedMessage ?: "Erro ao verificar conteúdo na API do Gemini."
+                    e.localizedMessage ?: "Erro ao verificar conteúdo com a IA."
                 )
             }
         }
@@ -753,12 +736,7 @@ class NexusViewModel(application: Application) : AndroidViewModel(application) {
                 throw e
             } catch (e: TimeoutCancellationException) {
                 _websiteUiState.value = WebsiteUiState.Error(
-                    "Tempo limite excedido ao gerar o site com o Gemini. Tente novamente."
-                )
-            } catch (e: MissingApiKeyException) {
-                _websiteUiState.value = WebsiteUiState.Error(
-                    e.message ?: "Chave Gemini não configurada.",
-                    needsApiKey = true
+                    "Tempo limite excedido ao gerar o site com IA. Tente novamente."
                 )
             } catch (e: Exception) {
                 _websiteUiState.value = WebsiteUiState.Error(
@@ -799,12 +777,7 @@ class NexusViewModel(application: Application) : AndroidViewModel(application) {
                 throw e
             } catch (e: TimeoutCancellationException) {
                 _websiteUiState.value = WebsiteUiState.Error(
-                    "Tempo limite excedido ao criar o jogo com o Gemini."
-                )
-            } catch (e: MissingApiKeyException) {
-                _websiteUiState.value = WebsiteUiState.Error(
-                    e.message ?: "Chave Gemini não configurada.",
-                    needsApiKey = true
+                    "Tempo limite excedido ao criar o jogo com IA. Tente novamente."
                 )
             } catch (e: Exception) {
                 _websiteUiState.value = WebsiteUiState.Error(
@@ -864,12 +837,7 @@ class NexusViewModel(application: Application) : AndroidViewModel(application) {
                 throw e
             } catch (e: TimeoutCancellationException) {
                 _antivirusUiState.value = AntivirusUiState.Error(
-                    "Tempo limite excedido ao consultar o Gemini. Tente novamente."
-                )
-            } catch (e: MissingApiKeyException) {
-                _antivirusUiState.value = AntivirusUiState.Error(
-                    e.message ?: "Chave Gemini não configurada.",
-                    needsApiKey = true
+                    "Tempo limite excedido ao analisar o link. Tente novamente."
                 )
             } catch (e: Exception) {
                 _antivirusUiState.value = AntivirusUiState.Error(
@@ -914,11 +882,6 @@ class NexusViewModel(application: Application) : AndroidViewModel(application) {
             } catch (e: TimeoutCancellationException) {
                 _commercialCopyUiState.value = CommercialCopyUiState.Error(
                     "Tempo limite excedido ao gerar texto comercial. Tente novamente."
-                )
-            } catch (e: MissingApiKeyException) {
-                _commercialCopyUiState.value = CommercialCopyUiState.Error(
-                    e.message ?: "Chave Gemini não configurada.",
-                    needsApiKey = true
                 )
             } catch (e: Exception) {
                 _commercialCopyUiState.value = CommercialCopyUiState.Error(
@@ -981,12 +944,7 @@ class NexusViewModel(application: Application) : AndroidViewModel(application) {
                 throw e
             } catch (e: TimeoutCancellationException) {
                 _assistantUiState.value = AssistantUiState.Error(
-                    "Tempo limite excedido no assistente Gemini. Tente novamente."
-                )
-            } catch (e: MissingApiKeyException) {
-                _assistantUiState.value = AssistantUiState.Error(
-                    e.message ?: "Chave Gemini não configurada.",
-                    needsApiKey = true
+                    "Tempo limite excedido no assistente IA. Tente novamente."
                 )
             } catch (e: Exception) {
                 _assistantUiState.value = AssistantUiState.Error(

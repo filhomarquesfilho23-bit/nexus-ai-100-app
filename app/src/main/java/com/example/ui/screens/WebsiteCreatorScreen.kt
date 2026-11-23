@@ -56,7 +56,6 @@ import androidx.compose.material.icons.outlined.ContentPaste
 import androidx.compose.material.icons.outlined.DeleteOutline
 import androidx.compose.material.icons.outlined.Fullscreen
 import androidx.compose.material.icons.outlined.History
-import androidx.compose.material.icons.outlined.Key
 import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.outlined.Phone
 import androidx.compose.material.icons.outlined.QrCodeScanner
@@ -141,6 +140,7 @@ fun WebsiteCreatorScreen(
     onOpenCalculator: () -> Unit,
     onOpenYouTube: () -> Unit,
     onOpenMapsGps: () -> Unit,
+    onOpenNexusLanding: () -> Unit,
     corporateUrlInput: String,
     corporateAntivirusState: AntivirusUiState,
     onCorporateUrlChange: (String) -> Unit,
@@ -159,7 +159,6 @@ fun WebsiteCreatorScreen(
     onLoadFromHistory: (SavedSiteEntry) -> Unit,
     onDeleteHistoryEntry: (String) -> Unit,
     onDictateField: (label: String, onResult: (String) -> Unit) -> Unit,
-    onOpenApiSettings: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -260,6 +259,15 @@ fun WebsiteCreatorScreen(
                 }
                 item {
                     UtilityQuickPill(
+                        label = "Landing Nexus IA",
+                        icon = Icons.Filled.AutoAwesome,
+                        accent = NexusEmerald,
+                        onClick = onOpenNexusLanding,
+                        tag = "utility_nexus_landing_button"
+                    )
+                }
+                item {
+                    UtilityQuickPill(
                         label = "GPS / Mapa",
                         icon = Icons.Filled.Map,
                         accent = NexusNeonBlue,
@@ -281,8 +289,7 @@ fun WebsiteCreatorScreen(
                     onDictateField("Dite ou cole o link ou Pix") { spoken ->
                         onCorporateUrlChange(spoken)
                     }
-                },
-                onOpenApiSettings = onOpenApiSettings
+                }
             )
 
             // =========================================================================
@@ -323,9 +330,9 @@ fun WebsiteCreatorScreen(
                             Spacer(modifier = Modifier.height(4.dp))
                             Text(
                                 text = if (isGameMode) {
-                                    "Descreva um jogo e gere um game HTML5 jogável na tela com o Gemini."
+                                    "Descreva um jogo e gere um game HTML5 jogável na tela gratuitamente com IA."
                                 } else {
-                                    "Preencha os dados da empresa e gere um site HTML/CSS completo e responsivo grátis com o Gemini."
+                                    "Preencha os dados da empresa e gere um site HTML/CSS completo e responsivo grátis com IA."
                                 },
                                 style = MaterialTheme.typography.bodySmall,
                                 color = NexusTextSecondary
@@ -367,6 +374,31 @@ fun WebsiteCreatorScreen(
                             icon = Icons.Filled.SportsEsports,
                             onClick = { onSetGameMode(true) },
                             modifier = Modifier.weight(1f)
+                        )
+                    }
+
+                    OutlinedButton(
+                        onClick = onOpenNexusLanding,
+                        border = BorderStroke(1.dp, NexusEmerald.copy(alpha = 0.65f)),
+                        shape = RoundedCornerShape(12.dp),
+                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 10.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(48.dp)
+                            .testTag("open_nexus_landing_button")
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.AutoAwesome,
+                            contentDescription = null,
+                            tint = NexusEmerald,
+                            modifier = Modifier.size(18.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "Ver Modelo Pronto: Landing Page Nexus IA",
+                            style = MaterialTheme.typography.labelLarge,
+                            color = NexusEmerald,
+                            fontWeight = FontWeight.Bold
                         )
                     }
                 }
@@ -568,9 +600,7 @@ fun WebsiteCreatorScreen(
             AnimatedVisibility(visible = uiState is WebsiteUiState.Error) {
                 val err = uiState as? WebsiteUiState.Error
                 ErrorActionCard(
-                    message = err?.message.orEmpty(),
-                    needsApiKey = err?.needsApiKey == true,
-                    onOpenApiSettings = onOpenApiSettings
+                    message = err?.message.orEmpty()
                 )
             }
 
@@ -963,8 +993,7 @@ private fun CorporateAntivirusSpotlightCard(
     uiState: AntivirusUiState,
     onUrlChange: (String) -> Unit,
     onVerifyClick: () -> Unit,
-    onMicClick: () -> Unit,
-    onOpenApiSettings: () -> Unit
+    onMicClick: () -> Unit
 ) {
     val context = LocalContext.current
     val clipboard = LocalClipboardManager.current
@@ -1203,9 +1232,7 @@ private fun CorporateAntivirusSpotlightCard(
 
             if (uiState is AntivirusUiState.Error) {
                 ErrorActionCard(
-                    message = uiState.message,
-                    needsApiKey = uiState.needsApiKey,
-                    onOpenApiSettings = onOpenApiSettings
+                    message = uiState.message
                 )
             }
 
@@ -1372,8 +1399,6 @@ private fun CorporateAntivirusSpotlightCard(
 @Composable
 fun ErrorActionCard(
     message: String,
-    needsApiKey: Boolean,
-    onOpenApiSettings: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -1391,28 +1416,6 @@ fun ErrorActionCard(
                 style = MaterialTheme.typography.bodyMedium,
                 color = Color(0xFFFCA5A5)
             )
-            if (needsApiKey) {
-                Button(
-                    onClick = onOpenApiSettings,
-                    shape = RoundedCornerShape(10.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = NexusNeonBlue,
-                        contentColor = Color(0xFF04131E)
-                    ),
-                    modifier = Modifier.height(48.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.Key,
-                        contentDescription = null,
-                        modifier = Modifier.size(18.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = "Inserir Chave Gemini Agora",
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-            }
         }
     }
 }

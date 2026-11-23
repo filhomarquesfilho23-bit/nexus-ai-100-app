@@ -214,7 +214,7 @@ fun VipUnlockDialog(
                         Text(
                             text = "• AI Antivírus Corporativo (Links, Pix e Boletos)\n" +
                                 "• Criador de Sites IA e Criador de Jogos IA\n" +
-                                "• Assistente Universal por Voz com Gemini",
+                                "• Assistente Universal por Voz com IA",
                             style = MaterialTheme.typography.bodySmall,
                             color = NexusTextSecondary
                         )

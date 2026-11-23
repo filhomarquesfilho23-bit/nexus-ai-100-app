@@ -21,12 +21,9 @@ import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.GraphicEq
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.WorkspacePremium
-import androidx.compose.material.icons.outlined.Key
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,7 +41,6 @@ import androidx.compose.ui.unit.sp
 import com.example.R
 import com.example.data.LocalPreferencesStore
 import com.example.ui.theme.NexusBgDeep
-import com.example.ui.theme.NexusBorder
 import com.example.ui.theme.NexusDangerRed
 import com.example.ui.theme.NexusEmerald
 import com.example.ui.theme.NexusNeonBlue
@@ -53,13 +49,11 @@ import com.example.ui.theme.NexusTextPrimary
 
 @Composable
 fun NexusTopBar(
-    hasCustomKeySaved: Boolean,
     isListeningVoice: Boolean,
     isVipUnlocked: Boolean,
     remainingFreeUsesToday: Int,
     onOpenVipDialog: () -> Unit,
     onOpenVoiceAssistant: () -> Unit,
-    onOpenApiSettings: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -76,87 +70,61 @@ fun NexusTopBar(
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.weight(1f)
+            Box(
+                modifier = Modifier
+                    .size(38.dp)
+                    .clip(RoundedCornerShape(10.dp))
+                    .border(1.dp, NexusNeonBlue.copy(alpha = 0.5f), RoundedCornerShape(10.dp))
             ) {
-                Box(
-                    modifier = Modifier
-                        .size(38.dp)
-                        .clip(RoundedCornerShape(10.dp))
-                        .border(1.dp, NexusNeonBlue.copy(alpha = 0.5f), RoundedCornerShape(10.dp))
+                Image(
+                    painter = painterResource(id = R.drawable.nexus_icon_fg_1794786392551),
+                    contentDescription = stringResource(R.string.brand_header_title),
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.size(38.dp)
+                )
+            }
+            Spacer(modifier = Modifier.width(10.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.nexus_icon_fg_1794786392551),
-                        contentDescription = stringResource(R.string.brand_header_title),
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier.size(38.dp)
-                    )
-                }
-                Spacer(modifier = Modifier.width(10.dp))
-                Column {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(6.dp)
-                    ) {
-                        Text(
-                            text = stringResource(R.string.brand_header_title),
-                            style = MaterialTheme.typography.titleMedium.copy(
-                                fontWeight = FontWeight.Bold,
-                                letterSpacing = 0.5.sp
-                            ),
-                            color = NexusTextPrimary,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                        Box(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(999.dp))
-                                .background(NexusEmerald.copy(alpha = 0.16f))
-                                .border(1.dp, NexusEmerald.copy(alpha = 0.45f), RoundedCornerShape(999.dp))
-                                .padding(horizontal = 7.dp, vertical = 2.dp)
-                        ) {
-                            Text(
-                                text = stringResource(R.string.brand_free_badge),
-                                style = MaterialTheme.typography.labelSmall.copy(
-                                    fontSize = 9.sp,
-                                    fontWeight = FontWeight.Bold
-                                ),
-                                color = NexusEmerald,
-                                maxLines = 1
-                            )
-                        }
-                    }
                     Text(
-                        text = "Sites • Antivírus • 100 IAs • Utilitários",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = NexusNeonBlue.copy(alpha = 0.85f),
+                        text = stringResource(R.string.brand_header_title),
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            fontWeight = FontWeight.Bold,
+                            letterSpacing = 0.5.sp
+                        ),
+                        color = NexusTextPrimary,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(999.dp))
+                            .background(NexusEmerald.copy(alpha = 0.16f))
+                            .border(1.dp, NexusEmerald.copy(alpha = 0.45f), RoundedCornerShape(999.dp))
+                            .padding(horizontal = 7.dp, vertical = 2.dp)
+                    ) {
+                        Text(
+                            text = stringResource(R.string.brand_free_badge),
+                            style = MaterialTheme.typography.labelSmall.copy(
+                                fontSize = 9.sp,
+                                fontWeight = FontWeight.Bold
+                            ),
+                            color = NexusEmerald,
+                            maxLines = 1
+                        )
+                    }
                 }
-            }
-
-            IconButton(
-                onClick = onOpenApiSettings,
-                modifier = Modifier
-                    .minimumInteractiveComponentSize()
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(NexusSurface)
-                    .border(
-                        width = 1.dp,
-                        color = if (hasCustomKeySaved) NexusEmerald.copy(alpha = 0.6f) else NexusBorder,
-                        shape = RoundedCornerShape(12.dp)
-                    )
-                    .testTag("api_key_settings_button")
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.Key,
-                    contentDescription = stringResource(R.string.api_settings_cd),
-                    tint = if (hasCustomKeySaved) NexusEmerald else NexusNeonBlue
+                Text(
+                    text = "Sites • Antivírus • 100 IAs • Utilitários",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = NexusNeonBlue.copy(alpha = 0.85f),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
             }
         }

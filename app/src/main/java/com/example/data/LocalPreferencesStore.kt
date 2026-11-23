@@ -9,7 +9,7 @@ import java.util.Locale
 
 /**
  * Armazenamento local privado no dispositivo (SharedPreferences)
- * para salvar ferramentas favoritas, chave Gemini local, histórico dos últimos 5 sites gerados,
+ * para salvar ferramentas favoritas, histórico dos últimos 5 sites gerados,
  * contador diário de usos gratuitos e status de desbloqueio VIP.
  */
 class LocalPreferencesStore(context: Context) {
@@ -22,18 +22,6 @@ class LocalPreferencesStore(context: Context) {
 
     fun saveFavoriteToolIds(ids: Set<String>) {
         prefs.edit().putStringSet(KEY_FAVORITE_TOOLS, ids).apply()
-    }
-
-    fun getLocalApiKey(): String {
-        return prefs.getString(KEY_LOCAL_GEMINI_API_KEY, "") ?: ""
-    }
-
-    fun saveLocalApiKey(key: String) {
-        prefs.edit().putString(KEY_LOCAL_GEMINI_API_KEY, key.trim()).apply()
-    }
-
-    fun clearLocalApiKey() {
-        prefs.edit().remove(KEY_LOCAL_GEMINI_API_KEY).apply()
     }
 
     fun isVipUnlocked(): Boolean {
@@ -135,7 +123,6 @@ class LocalPreferencesStore(context: Context) {
     companion object {
         private const val PREFS_NAME = "nexus_ai_100_local_storage"
         private const val KEY_FAVORITE_TOOLS = "favorite_tool_ids"
-        private const val KEY_LOCAL_GEMINI_API_KEY = "local_gemini_api_key"
         private const val KEY_SITE_HISTORY = "generated_site_history_v1"
         private const val KEY_DAILY_USAGE_DATE = "daily_free_usage_date"
         private const val KEY_DAILY_USAGE_COUNT = "daily_free_usage_count"

@@ -793,7 +793,6 @@ fun UniversalVoiceAssistantSheet(
     onSubmitTextCommand: (String) -> Unit,
     onToggleMute: () -> Unit,
     onSpeakAgain: (String) -> Unit,
-    onOpenApiSettings: () -> Unit,
     onDismiss: () -> Unit
 ) {
     var manualCommand by remember(recognizedQuery) { mutableStateOf(recognizedQuery) }
@@ -982,7 +981,7 @@ fun UniversalVoiceAssistantSheet(
                             color = NexusNeonBlue
                         )
                         Text(
-                            text = "Consultando o Gemini...",
+                            text = "Consultando a IA...",
                             style = MaterialTheme.typography.bodyMedium,
                             color = NexusNeonBlue
                         )
@@ -991,12 +990,7 @@ fun UniversalVoiceAssistantSheet(
 
                 is UniversalAssistantUiState.Error -> {
                     ErrorActionCard(
-                        message = uiState.message,
-                        needsApiKey = uiState.needsApiKey,
-                        onOpenApiSettings = {
-                            onDismiss()
-                            onOpenApiSettings()
-                        }
+                        message = uiState.message
                     )
                 }
 

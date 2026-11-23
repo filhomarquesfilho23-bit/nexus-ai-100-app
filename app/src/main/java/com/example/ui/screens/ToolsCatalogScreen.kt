@@ -117,7 +117,6 @@ fun ToolsCatalogScreen(
     onAssistantQuestionChange: (String) -> Unit,
     onAskAssistant: (String?) -> Unit,
     onDictateField: (label: String, onResult: (String) -> Unit) -> Unit,
-    onOpenApiSettings: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -145,8 +144,7 @@ fun ToolsCatalogScreen(
                     onBusinessChange = onCommercialBusinessChange,
                     onTopicChange = onCommercialTopicChange,
                     onGenerateClick = onGenerateCommercialCopy,
-                    onDictateField = onDictateField,
-                    onOpenApiSettings = onOpenApiSettings
+                    onDictateField = onDictateField
                 )
             }
 
@@ -435,7 +433,7 @@ fun ToolsCatalogScreen(
                             color = Color(0xFF04131E)
                         )
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("Consultando Gemini...", fontWeight = FontWeight.Bold)
+                        Text("Consultando IA...", fontWeight = FontWeight.Bold)
                     } else {
                         Icon(
                             imageVector = Icons.Filled.AutoAwesome,
@@ -449,12 +447,7 @@ fun ToolsCatalogScreen(
 
                 if (assistantUiState is AssistantUiState.Error) {
                     ErrorActionCard(
-                        message = assistantUiState.message,
-                        needsApiKey = assistantUiState.needsApiKey,
-                        onOpenApiSettings = {
-                            onCloseAssistant()
-                            onOpenApiSettings()
-                        }
+                        message = assistantUiState.message
                     )
                 }
 
@@ -538,8 +531,7 @@ private fun CommercialCopyGeneratorCard(
     onBusinessChange: (String) -> Unit,
     onTopicChange: (String) -> Unit,
     onGenerateClick: () -> Unit,
-    onDictateField: (label: String, onResult: (String) -> Unit) -> Unit,
-    onOpenApiSettings: () -> Unit
+    onDictateField: (label: String, onResult: (String) -> Unit) -> Unit
 ) {
     val context = LocalContext.current
     val clipboard = LocalClipboardManager.current
@@ -591,7 +583,7 @@ private fun CommercialCopyGeneratorCard(
                         fontWeight = FontWeight.Bold
                     )
                     Text(
-                        text = "Gere mensagens prontas para WhatsApp, E-mail e Anúncios com o Gemini.",
+                        text = "Gere mensagens prontas para WhatsApp, E-mail e Anúncios gratuitamente com IA.",
                         style = MaterialTheme.typography.bodySmall,
                         color = NexusTextSecondary
                     )
@@ -706,7 +698,7 @@ private fun CommercialCopyGeneratorCard(
                         color = Color(0xFF031F16)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Gerando Texto com Gemini...", fontWeight = FontWeight.Bold)
+                    Text("Gerando Texto com IA...", fontWeight = FontWeight.Bold)
                 } else {
                     Icon(
                         imageVector = Icons.Filled.AutoAwesome,
@@ -720,9 +712,7 @@ private fun CommercialCopyGeneratorCard(
 
             if (uiState is CommercialCopyUiState.Error) {
                 ErrorActionCard(
-                    message = uiState.message,
-                    needsApiKey = uiState.needsApiKey,
-                    onOpenApiSettings = onOpenApiSettings
+                    message = uiState.message
                 )
             }
 

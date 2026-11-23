@@ -63,8 +63,8 @@ import com.example.ui.components.AdsterraBottomBanner
 import com.example.ui.components.AdsterraTopBanner
 import com.example.ui.components.AlarmModalSheet
 import com.example.ui.components.AlarmRingingDialog
-import com.example.ui.components.ApiKeyDialog
 import com.example.ui.components.CalculatorModalSheet
+import com.example.ui.components.NexusLandingPageSheet
 import com.example.ui.components.NexusTopBar
 import com.example.ui.components.UniversalVoiceAssistantSheet
 import com.example.ui.components.VipUnlockDialog
@@ -115,8 +115,6 @@ fun NexusApp(
     }
 
     val selectedTab by viewModel.selectedTab.collectAsStateWithLifecycle()
-    val localApiKey by viewModel.localApiKey.collectAsStateWithLifecycle()
-    val isApiDialogOpen by viewModel.isApiDialogOpen.collectAsStateWithLifecycle()
     val isVipUnlocked by viewModel.isVipUnlocked.collectAsStateWithLifecycle()
     val remainingFreeUsesToday by viewModel.remainingFreeUsesToday.collectAsStateWithLifecycle()
     val isVipDialogOpen by viewModel.isVipDialogOpen.collectAsStateWithLifecycle()
@@ -138,6 +136,7 @@ fun NexusApp(
     val calcInitialResult by viewModel.calcInitialResult.collectAsStateWithLifecycle()
 
     val youtubeQueryOpen by viewModel.youtubeQueryOpen.collectAsStateWithLifecycle()
+    val isNexusLandingOpen by viewModel.isNexusLandingOpen.collectAsStateWithLifecycle()
 
     val isVoiceSheetOpen by viewModel.isVoiceSheetOpen.collectAsStateWithLifecycle()
     val recognizedVoiceText by viewModel.recognizedVoiceText.collectAsStateWithLifecycle()
@@ -350,13 +349,11 @@ fun NexusApp(
         topBar = {
             Column(modifier = Modifier.fillMaxWidth()) {
                 NexusTopBar(
-                    hasCustomKeySaved = localApiKey.isNotEmpty(),
                     isListeningVoice = isListeningVoice,
                     isVipUnlocked = isVipUnlocked,
                     remainingFreeUsesToday = remainingFreeUsesToday,
                     onOpenVipDialog = viewModel::openVipDialog,
-                    onOpenVoiceAssistant = ::triggerUniversalVoiceCommand,
-                    onOpenApiSettings = viewModel::openApiDialog
+                    onOpenVoiceAssistant = ::triggerUniversalVoiceCommand
                 )
                 HorizontalDivider(color = NexusBorder, thickness = 1.dp)
                 // <!-- ESPAÇO BANNER ADSTERRA TOPO -->
@@ -444,6 +441,7 @@ fun NexusApp(
                         onOpenCalculator = { viewModel.openCalculator() },
                         onOpenYouTube = { viewModel.openYouTubeSearch("") },
                         onOpenMapsGps = { openMapsGps(weatherCityInput) },
+                        onOpenNexusLanding = viewModel::openNexusLanding,
                         corporateUrlInput = corporateUrlInput,
                         corporateAntivirusState = corporateAntivirusState,
                         onCorporateUrlChange = viewModel::updateCorporateUrlInput,
@@ -461,8 +459,7 @@ fun NexusApp(
                         onGenerateClick = viewModel::generateWebsite,
                         onLoadFromHistory = viewModel::loadSiteFromHistory,
                         onDeleteHistoryEntry = viewModel::deleteSiteFromHistory,
-                        onDictateField = ::startDictation,
-                        onOpenApiSettings = viewModel::openApiDialog
+                        onDictateField = ::startDictation
                     )
 
                     1 -> AiAntivirusScreen(
@@ -470,8 +467,7 @@ fun NexusApp(
                         uiState = antivirusUiState,
                         onUrlChange = viewModel::updateUrlInput,
                         onAnalyzeClick = viewModel::analyzeUrl,
-                        onDictateField = ::startDictation,
-                        onOpenApiSettings = viewModel::openApiDialog
+                        onDictateField = ::startDictation
                     )
 
                     else -> ToolsCatalogScreen(
@@ -500,21 +496,11 @@ fun NexusApp(
                         onCloseAssistant = viewModel::closeToolAssistant,
                         onAssistantQuestionChange = viewModel::updateAssistantQuestion,
                         onAskAssistant = viewModel::askToolAssistant,
-                        onDictateField = ::startDictation,
-                        onOpenApiSettings = viewModel::openApiDialog
+                        onDictateField = ::startDictation
                     )
                 }
             }
         }
-    }
-
-    if (isApiDialogOpen) {
-        ApiKeyDialog(
-            currentKey = localApiKey,
-            onDismiss = viewModel::closeApiDialog,
-            onSave = viewModel::saveLocalApiKey,
-            onClear = viewModel::clearLocalApiKey
-        )
     }
 
     if (isVipDialogOpen) {
@@ -585,6 +571,13 @@ fun NexusApp(
         )
     }
 
+    if (isNexusLandingOpen) {
+        NexusLandingPageSheet(
+            onDictateField = ::startDictation,
+            onDismiss = viewModel::closeNexusLanding
+        )
+    }
+
     if (isVoiceSheetOpen) {
         UniversalVoiceAssistantSheet(
             isListening = isListeningVoice,
@@ -614,7 +607,6 @@ fun NexusApp(
                 voiceManager.setMuted(false)
                 voiceManager.speak(text)
             },
-            onOpenApiSettings = viewModel::openApiDialog,
             onDismiss = {
                 voiceManager.stopListening()
                 viewModel.closeVoiceAssistantSheet()
